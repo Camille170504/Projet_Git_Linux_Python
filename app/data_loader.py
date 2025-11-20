@@ -1,4 +1,6 @@
 import pandas as pd
+import streamlit as st
+from data_loader import fetch_single_asset_history
 
 def fetch_single_asset_history(symbol: str, start: str, end: str) -> pd.DataFrame:
     """
@@ -11,3 +13,4 @@ def fetch_single_asset_history(symbol: str, start: str, end: str) -> pd.DataFram
     df = pd.DataFrame({"date": dates, "price": prices})
     df.set_index("date", inplace=True)
     return df
+
