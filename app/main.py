@@ -9,7 +9,7 @@ def main():
     )
 
     st.title("Quant Dashboard – Python / Git / Linux")
-    st.markdown("Plateforme de **recherche quantitative** avec données financières (quasi) temps réel.")
+    st.markdown("Plateforme de recherche quantitative avec données financières (quasi) temps réel.")
 
     # Sidebar : choix du module
     st.sidebar.title("Navigation")
