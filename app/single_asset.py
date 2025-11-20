@@ -1,3 +1,5 @@
+import pandas as pd
+
 import streamlit as st
 from data_loader import fetch_single_asset_history
 
@@ -42,3 +44,4 @@ def run_single_asset_app():
     st.line_chart(df["price"])
 
     st.caption("Données factices pour tester le dashboard. On branchera une vraie API ensuite.")
+
