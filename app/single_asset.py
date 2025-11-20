@@ -17,7 +17,6 @@ def run_single_asset_app():
     st.markdown(
         """
         Analyse d'un actif unique.
-		
 		Les données proviennets de l'API publique de Binance
         """
     )
@@ -81,5 +80,6 @@ def run_single_asset_app():
     col4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
     st.caption("Données Binance + stratégie Buy & Hold.")
+
 
 
