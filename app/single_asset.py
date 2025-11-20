@@ -16,9 +16,9 @@ def run_single_asset_app():
 
     st.markdown(
         """
-        Analyse d'un **actif unique** (action, FX, crypto...).
+        Analyse d'un actif unique.
 
-        Pour l'instant, on affiche des données factices pour tester l'interface.
+	Les données proviennets de l'API publique de Binance
         """
     )
 
