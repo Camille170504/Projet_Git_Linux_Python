@@ -50,7 +50,7 @@ def run_single_asset_app():
 
     st.markdown(
         """
-        Suivi d'une **cryptomonnaie en temps quasi réel** grâce aux données Binance.
+        Suivi d'une cryptomonnaie en temps quasi réel grâce aux données Binance.
 
         Visualisez le prix, la stratégie choisie (*Buy & Hold* ou *Moving Average*)
         et des indicateurs clés (volatilité, Sharpe ratio, drawdown…).
@@ -165,3 +165,4 @@ def run_single_asset_app():
     col4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
     st.caption("Données Binance + stratégie sélectionnée sur la période choisie.")
+
