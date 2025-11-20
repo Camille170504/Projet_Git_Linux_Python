@@ -1,5 +1,4 @@
 import pandas as pd
-
 import streamlit as st
 from data_loader import fetch_single_asset_history
 
@@ -10,7 +9,7 @@ def run_single_asset_app():
         """
         Analyse d'un **actif unique** (action, FX, crypto...).
 
-        On commence par afficher une série de prix factice pour tester la structure.
+        Pour l'instant, on affiche des données factices pour tester l'interface.
         """
     )
 
@@ -29,7 +28,7 @@ def run_single_asset_app():
         st.error("La date de début doit être strictement avant la date de fin.")
         return
 
-    # --- Récupération des données (pour l'instant, factices) ---
+    # --- Récupération des données (factices pour l'instant) ---
     df = fetch_single_asset_history(
         symbol=symbol,
         start=start_date.strftime("%Y-%m-%d"),
@@ -44,4 +43,3 @@ def run_single_asset_app():
     st.line_chart(df["price"])
 
     st.caption("Données factices pour tester le dashboard. On branchera une vraie API ensuite.")
-
