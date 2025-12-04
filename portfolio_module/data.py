@@ -35,7 +35,8 @@ def fetch_single_asset_history(symbol: str, start: str, end: str, interval: str 
     df.sort_index(inplace=True)
     return df
 
-def fetch_multi_assets(symbols, start: str, end: str, interval: str = "1h") -> pd.DataFrame:
+def get_data(symbols, start: str, end: str, interval: str = "1h") -> pd.DataFrame:
+
     """
     Récupère l'historique de plusieurs actifs et fusionne dans un DataFrame.
     """
