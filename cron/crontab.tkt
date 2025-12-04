@@ -1,0 +1,1 @@
+0 20 * * * /home/user/Projet_Git_Linux_Python/cron/portfolio_report.sh >> /home/user/Projet_Git_Linux_Python/cron/cron.log 2>&1
