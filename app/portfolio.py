@@ -47,6 +47,12 @@ def run_portfolio_app():
         start=start_date.strftime("%Y-%m-%d"),
         end=end_date.strftime("%Y-%m-%d")
     )
+    df_prices.index = pd.to_datetime(df_prices.index)
+
+    df_prices = df_prices.loc[
+        (df_prices.index >= pd.to_datetime(start_date)) &
+        (df_prices.index <= pd.to_datetime(end_date))
+    ]
 
     if df_prices.empty:
         st.warning("No data is available for this period and these assets.")
