@@ -11,6 +11,7 @@ from metrics import (
     sharpe_ratio,
 )
 
+
 def run_portfolio_app():
     st.header("Portfolio Module – Quant B")
 
@@ -26,8 +27,8 @@ def run_portfolio_app():
         help="Select at least two assets for a true diversification effect."
     )
 
-    if len(symbols) == 0:
-        st.warning("Select at least two cryptocurrency.")
+    if len(symbols) < 2:
+        st.warning("Select at least two cryptocurrencies.")
         return
 
     col1, col2 = st.sidebar.columns(2)
@@ -51,24 +52,36 @@ def run_portfolio_app():
         st.warning("No data is available for this period and these assets.")
         return
 
-    st.subheader("Price of selected assets")
-    st.line_chart(df_prices)
+    # ---------- PRICE CHART (NORMALIZED) ----------
+    st.subheader("Normalized price evolution of selected assets (base 100)")
+
+    df_prices_norm = 100 * df_prices / df_prices.iloc[0]
+    st.line_chart(df_prices_norm)
+
+    st.caption(
+        "Prices are normalized to base 100 to allow comparison between assets "
+        "with very different price levels."
+    )
 
     # ---------- RETURNS & PORTFOLIO ----------
     df_returns = df_prices.pct_change().dropna()
     if df_returns.empty:
-        st.warning("Not enough data to calculate yields.")
+        st.warning("Not enough data to calculate returns.")
         return
 
     n_assets = len(symbols)
-    weights = pd.Series([1.0 / n_assets] * n_assets, index=symbols)
+    weights = pd.Series(1.0 / n_assets, index=symbols)
 
-    st.markdown(f"**Equal weighting** : {', '.join([f'{s} {1/n_assets:.2%}' for s in symbols])}")
+    st.markdown(
+        f"**Equal weighting** : {', '.join([f'{s} {1/n_assets:.2%}' for s in symbols])}"
+    )
 
     portfolio_returns = (df_returns * weights).sum(axis=1)
+    portfolio_cum_value = compute_cumulative_value(
+        portfolio_returns, initial_capital=1.0
+    )
 
-    portfolio_cum_value = compute_cumulative_value(portfolio_returns, initial_capital=1.0)
-
+    # ---------- PORTFOLIO VALUE ----------
     st.subheader("Cumulative portfolio value")
     st.line_chart(portfolio_cum_value)
 
@@ -85,7 +98,7 @@ def run_portfolio_app():
     c3.metric("Max drawdown", f"{mdd:.2f} %")
     c4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
-    # ---------- Corrélation ----------
+    # ---------- CORRELATION ----------
     st.subheader("Return correlation matrix")
     corr = df_returns.corr()
     st.dataframe(corr.style.format("{:.2f}"))
