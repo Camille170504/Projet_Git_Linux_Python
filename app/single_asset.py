@@ -11,33 +11,24 @@ from metrics import (
     sharpe_ratio,
 )
 
-# ---------- Stratégie Moving Average (MA) ----------
+# ---------- Moving Average Strategy (MA) ----------
 
 def moving_average_strategy_returns(
     price: pd.Series,
     short_window: int = 20,
     long_window: int = 50,
 ) -> pd.Series:
-    """
-    Stratégie simple de croisement de moyennes mobiles :
-    - long quand MA courte > MA longue
-    - cash sinon
-
-    Retourne une série de rendements de la stratégie.
-    """
+    
     short_ma = price.rolling(short_window).mean()
     long_ma = price.rolling(long_window).mean()
 
-    # Signal : 1 = investi, 0 = cash
+    # Signal : 1 = invested, 0 = cash
     signal = (short_ma > long_ma).astype(int)
 
-    # On décale d'une période pour éviter le look-ahead bias
     signal = signal.shift(1).fillna(0)
 
-    # Rendements de l'actif
     returns = price.pct_change().fillna(0)
 
-    # Rendements de la stratégie
     strat_returns = signal * returns
 
     return strat_returns.dropna()
@@ -46,69 +37,60 @@ def moving_average_strategy_returns(
 # ---------- App Single Asset ----------
 
 def run_single_asset_app():
-    st.header("Module Single Asset – Quant A")
+    st.header("Single Asset Module – Quant A")
 
-    st.markdown(
-        """
-        Suivi d'une **cryptomonnaie en temps quasi réel** grâce aux données Binance.
+    # --- Sidebar ---
+    st.sidebar.subheader("Single Asset Settings")
 
-        Visualisez le prix, la stratégie choisie (*Buy & Hold* ou *Moving Average*)
-        et des indicateurs clés (volatilité, Sharpe ratio, drawdown…).
-        """
-    )
-
-    # --- Sidebar : paramètres ---
-    st.sidebar.subheader("Paramètres Single Asset")
-
-    # Menu déroulant pour choisir la crypto
+    # Drop-down menu to choose the crypto
     crypto_choices = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"]
     symbol = st.sidebar.selectbox(
         "Crypto (Binance)",
         options=crypto_choices,
         index=0,
-        help="Paires spot USDT disponibles sur Binance (ex : BTCUSDT)."
+        help="Paires spot USDT disponibles sur Binance."
     )
 
-    # Choix de la stratégie
+    # Strategy selection
     strategy = st.sidebar.radio(
-        "Stratégie",
+        "Strategy",
         options=["Buy & Hold", "Moving Average (MA)"],
         index=0,
     )
 
-    # Paramètres pour la stratégie MA
+    # Settings for the MA strategy
     short_window = None
     long_window = None
     if strategy == "Moving Average (MA)":
-        st.sidebar.markdown("**Paramètres Moving Average**")
+        st.sidebar.markdown("**Moving Average Settings**")
         short_window = st.sidebar.slider(
-            "MA courte (périodes)",
+            "MA short (periods)",
             min_value=5,
             max_value=100,
             value=20,
             step=1,
         )
         long_window = st.sidebar.slider(
-            "MA longue (périodes)",
+            "MA long (periods)",
             min_value=10,
             max_value=200,
             value=50,
             step=1,
         )
         if short_window >= long_window:
-            st.sidebar.error("La MA courte doit être strictement inférieure à la MA longue.")
+            st.sidebar.error("The short MA must be strictly less than the long MA.")
 
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        start_date = st.date_input("Date de début", value=pd.to_datetime("2024-10-10"))
+        start_date = st.date_input("Start date", value=pd.to_datetime("2024-10-10"))
     with col2:
-        end_date = st.date_input("Date de fin", value=pd.to_datetime("2024-11-20"))
+        end_date = st.date_input("End date", value=pd.to_datetime("2024-11-20"))
 
     if start_date >= end_date:
-        st.error("La date de début doit être strictement avant la date de fin.")
+        st.error("The start date must be strictly before the end date.")
         return
 
-    # ---------- RÉCUPÉRATION DES DONNÉES ----------
+    # ---------- DATA RECOVERY ----------
     df = fetch_single_asset_history(
         symbol=symbol,
         start=start_date.strftime("%Y-%m-%d"),
@@ -116,18 +98,17 @@ def run_single_asset_app():
     )
 
     if df.empty:
-        st.warning("Aucune donnée disponible pour cette période.")
+        st.warning("No data is available for this period.")
         return
 
-    # ---------- GRAPHIQUE DE PRIX ----------
-    st.subheader(f"Prix de l'actif : {symbol}")
+    # ---------- PRICE CHART ----------
+    st.subheader(f" Asset price : {symbol}")
     st.line_chart(df["price"])
 
-    # ---------- CHOIX DE LA STRATÉGIE ----------
-    # Rendements de base de l'actif (pour Buy & Hold)
+    # ---------- CHOICE OF STRATEGY ----------
     asset_returns = compute_returns(df["price"])
     if asset_returns.empty:
-        st.warning("Pas assez de données pour calculer les rendements.")
+        st.warning("Not enough data to calculate yields.")
         return
 
     if strategy == "Buy & Hold":
@@ -142,13 +123,12 @@ def run_single_asset_app():
         )
 
         if strat_returns.empty:
-            st.warning("Pas assez de données pour la stratégie Moving Average.")
+            st.warning("Not enough data for the Moving Average strategy.")
             return
 
-    # Valeur cumulée de la stratégie choisie
     cum_value = compute_cumulative_value(strat_returns, initial_capital=1.0)
 
-    st.subheader(f"Stratégie {strat_name} – Valeur cumulée")
+    st.subheader(f"Strategy {strat_name} – Cumulative value")
     st.line_chart(cum_value)
 
     # ---------- KPIs ----------
@@ -157,11 +137,9 @@ def run_single_asset_app():
     mdd = max_drawdown(cum_value) * 100
     sharpe = sharpe_ratio(strat_returns)
 
-    st.subheader("Indicateurs de performance")
+    st.subheader("Performance indicators")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Perf totale", f"{perf_totale:.2f} %")
-    col2.metric("Vol annualisée", f"{vol_annuelle:.2f} %")
+    col1.metric("Total performance", f"{perf_totale:.2f} %")
+    col2.metric("Annualized volatility", f"{vol_annuelle:.2f} %")
     col3.metric("Max drawdown", f"{mdd:.2f} %")
     col4.metric("Sharpe ratio", f"{sharpe:.2f}")
-
-    st.caption("Données Binance + stratégie sélectionnée sur la période choisie.")
