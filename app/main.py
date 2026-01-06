@@ -3,19 +3,19 @@ from single_asset import run_single_asset_app
 
 
 def main():
-    # Config de la page
+    # Page configuration
     st.set_page_config(
-        page_title="Quant Dashboard – Crypto (Quant A)",
+        page_title="Quant Dashboard",
         layout="wide",
     )
 
-    # Titre principal
-    st.title("Quant Dashboard – Crypto – Quant A")
+    # Main title
+    st.title("Quant Dashboard")
     st.markdown(
-        "Suivi d'une **cryptomonnaie en temps quasi réel** grâce aux données Binance."
+        "Tracking a cryptocurrency in near real-time using Binance data."
     )
 
-    # Pas de menu de navigation ici : uniquement le module Single Asset
+    # No navigation menu here: only the Single Asset module
     run_single_asset_app()
 
 
