@@ -11,9 +11,6 @@ def main():
 
     # Main title
     st.title("Quant Dashboard")
-    st.markdown(
-        "Tracking a cryptocurrency in near real-time using Binance data."
-    )
 
     # No navigation menu here: only the Single Asset module
     run_single_asset_app()
