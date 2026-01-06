@@ -33,9 +33,9 @@ def run_portfolio_app():
 
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        start_date = st.date_input("Start date", value=pd.to_datetime("2024-10-10"))
+        start_date = st.date_input("Start date", value=pd.Timestamp.today()-pd.DateOffset(years=1)
     with col2:
-        end_date = st.date_input("End date", value=pd.to_datetime("2024-11-20"))
+        end_date = st.date_input("End date", value=pd.Timestamp.today())
 
     if start_date >= end_date:
         st.error("The start date must be strictly before the end date.")
