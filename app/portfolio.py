@@ -12,48 +12,35 @@ from metrics import (
 )
 
 def run_portfolio_app():
-    st.header("Module Portfolio – Quant B")
+    st.header("Portfolio Module – Quant B")
 
-    st.markdown(
-        """
-        Analyse d'un **portefeuille de plusieurs cryptos** (données Binance).
-
-        On construit un portefeuille pondéré également et on calcule :
-        - la valeur cumulée,
-        - la volatilité,
-        - le max drawdown,
-        - le Sharpe ratio,
-        - la matrice de corrélation des actifs.
-        """
-    )
-
-    st.sidebar.subheader("Paramètres Portfolio")
+    st.sidebar.subheader("Portfolio settings")
 
     # Liste de cryptos disponibles
     crypto_choices = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"]
 
     symbols = st.sidebar.multiselect(
-        "Choisir les cryptos du portefeuille",
+        "Choose the cryptocurrencies for your portfolio",
         options=crypto_choices,
         default=["BTCUSDT", "ETHUSDT", "SOLUSDT"],
-        help="Sélectionne au moins deux actifs pour un vrai effet de diversification."
+        help="Select at least two assets for a true diversification effect."
     )
 
     if len(symbols) == 0:
-        st.warning("Sélectionne au moins une crypto.")
+        st.warning("Select at least two cryptocurrency.")
         return
 
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        start_date = st.date_input("Date de début", value=pd.to_datetime("2024-10-10"))
+        start_date = st.date_input("Start date", value=pd.to_datetime("2024-10-10"))
     with col2:
-        end_date = st.date_input("Date de fin", value=pd.to_datetime("2024-11-20"))
+        end_date = st.date_input("End date", value=pd.to_datetime("2024-11-20"))
 
     if start_date >= end_date:
-        st.error("La date de début doit être strictement avant la date de fin.")
+        st.error("The start date must be strictly before the end date.")
         return
 
-    # ---------- RÉCUPÉRATION DES DONNÉES ----------
+    # ---------- DATA RECOVERY ----------
     df_prices = fetch_multi_assets_history(
         symbols=symbols,
         start=start_date.strftime("%Y-%m-%d"),
@@ -61,31 +48,28 @@ def run_portfolio_app():
     )
 
     if df_prices.empty:
-        st.warning("Aucune donnée disponible pour cette période et ces actifs.")
+        st.warning("No data is available for this period and these assets.")
         return
 
-    st.subheader("Prix des actifs sélectionnés")
+    st.subheader("Price of selected assets")
     st.line_chart(df_prices)
 
-    # ---------- RENDEMENTS & PORTEFEUILLE ----------
+    # ---------- RETURNS & PORTFOLIO ----------
     df_returns = df_prices.pct_change().dropna()
     if df_returns.empty:
-        st.warning("Pas assez de données pour calculer les rendements.")
+        st.warning("Not enough data to calculate yields.")
         return
 
-    # pondération égale
     n_assets = len(symbols)
     weights = pd.Series([1.0 / n_assets] * n_assets, index=symbols)
 
-    st.markdown(f"**Pondération égale** : {', '.join([f'{s} {1/n_assets:.2%}' for s in symbols])}")
+    st.markdown(f"**Equal weighting** : {', '.join([f'{s} {1/n_assets:.2%}' for s in symbols])}")
 
-    # rendement du portefeuille
     portfolio_returns = (df_returns * weights).sum(axis=1)
 
-    # valeur cumulée du portefeuille
     portfolio_cum_value = compute_cumulative_value(portfolio_returns, initial_capital=1.0)
 
-    st.subheader("Valeur cumulée du portefeuille")
+    st.subheader("Cumulative portfolio value")
     st.line_chart(portfolio_cum_value)
 
     # ---------- KPIs ----------
@@ -94,14 +78,14 @@ def run_portfolio_app():
     mdd = max_drawdown(portfolio_cum_value) * 100
     sharpe = sharpe_ratio(portfolio_returns)
 
-    st.subheader("Indicateurs de performance du portefeuille")
+    st.subheader("Portfolio performance indicators")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Perf totale", f"{perf_totale:.2f} %")
-    c2.metric("Vol annualisée", f"{vol_annuelle:.2f} %")
+    c1.metric("Total performance", f"{perf_totale:.2f} %")
+    c2.metric("Annualized volatility", f"{vol_annuelle:.2f} %")
     c3.metric("Max drawdown", f"{mdd:.2f} %")
     c4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
     # ---------- Corrélation ----------
-    st.subheader("Matrice de corrélation des rendements")
+    st.subheader("Return correlation matrix")
     corr = df_returns.corr()
     st.dataframe(corr.style.format("{:.2f}"))
