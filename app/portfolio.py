@@ -33,7 +33,7 @@ def run_portfolio_app():
 
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        start_date = st.date_input("Start date", value=pd.Timestamp.today()-pd.DateOffset(years=1)
+        start_date = st.date_input("Start date", value=pd.Timestamp.today()-pd.DateOffset(years=1))
     with col2:
         end_date = st.date_input("End date", value=pd.Timestamp.today())
 
