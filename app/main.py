@@ -2,6 +2,7 @@ import streamlit as st
 from single_asset import run_single_asset_app
 from portfolio import run_portfolio_app
 
+st.experimental_autorefresh(interval=300000, key="auto_refresh")
 
 def main():
     st.set_page_config(
@@ -9,7 +10,6 @@ def main():
         layout="wide",
     )
 
-    st.experimental_autorefresh(interval=300000, key="auto_refresh")
     st.title("Quant Dashboard – Crypto")
     st.markdown(
         "Quantitative research platform with near real-time Binance data."
