@@ -9,7 +9,7 @@ def main():
         page_title="Quant Dashboard",
         layout="wide",
     )
-    st_autorefresh(interval=300000,key="datarefresh")
+    st_autorefresh(interval=300000, key="datarefresh")
     st.title("Quant Dashboard – Crypto")
     st.markdown(
         "Quantitative research platform with near real-time Binance data."
