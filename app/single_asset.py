@@ -148,8 +148,22 @@ def run_single_asset_app():
     # Valeur cumulée de la stratégie choisie
     cum_value = compute_cumulative_value(strat_returns, initial_capital=1.0)
 
-    st.subheader(f"Stratégie {strat_name} – Valeur cumulée")
-    st.line_chart(cum_value)
+    # ---------- GRAPHIQUE COMBINÉ ----------
+    st.subheader(f"Prix & stratégie {strat_name}")
+
+ # On met la stratégie sur la même échelle que le prix pour la lisibilité
+    # (affichage uniquement : les KPIs restent calculés sur cum_value brute)
+    first_price = df.loc[cum_value.index[0], "price"]
+    first_cum = cum_value.iloc[0]
+    strategy_scaled = cum_value * (first_price / first_cum)
+
+
+    df_plot = pd.DataFrame({
+        "Price": df.loc[cum_value.index, "price"],
+        "Strategy value": cum_value,
+    })
+
+    st.line_chart(df_plot)
 
     # ---------- KPIs ----------
     perf_totale = total_return(cum_value) * 100
