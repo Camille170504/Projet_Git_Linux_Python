@@ -1,23 +1,28 @@
 import streamlit as st
 from single_asset import run_single_asset_app
 from portfolio import run_portfolio_app
+from streamlit_autorefresh import st_autorefresh
+
 
 def main():
     st.set_page_config(
-        page_title="Quant Dashboard - Python / Git / Linux",
-        layout="wide"
+        page_title="Quant Dashboard",
+        layout="wide",
+    )
+    st_autorefresh(interval=300000, key="datarefresh")
+    st.title("Quant Dashboard – Crypto")
+    st.markdown(
+        "Quantitative research platform with near real-time Binance data."
     )
 
-    st.title("Quant Dashboard – Python / Git / Linux")
-    st.markdown("Plateforme de recherche quantitative avec données financières (quasi) temps réel.")
-
-    # Sidebar : choix du module
+    # Sidebar : navigation
     st.sidebar.title("Navigation")
     module = st.sidebar.radio(
-        "Choisir un module :",
-        ("Single Asset (Quant A)", "Portfolio (Quant B)")
+        "Choose a module :",
+        ("Single Asset (Quant A)", "Portfolio (Quant B)"),
     )
 
+    # Routing to sub-modules
     if module == "Single Asset (Quant A)":
         run_single_asset_app()
     else:

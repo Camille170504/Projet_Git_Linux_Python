@@ -2,15 +2,12 @@ import numpy as np
 import pandas as pd
 
 def compute_returns(price_series: pd.Series) -> pd.Series:
-    """Rendements simples journaliers."""
     return price_series.pct_change().dropna()
 
 def compute_cumulative_value(returns: pd.Series, initial_capital: float = 1.0) -> pd.Series:
-    """Valeur cumulée d'une stratégie buy & hold."""
     return initial_capital * (1 + returns).cumprod()
 
 def max_drawdown(cum_value: pd.Series) -> float:
-    """Max drawdown en %."""
     running_max = cum_value.cummax()
     drawdown = (cum_value - running_max) / running_max
     return float(drawdown.min())
