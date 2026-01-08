@@ -18,17 +18,27 @@ def moving_average_strategy_returns(
     short_window: int = 20,
     long_window: int = 50,
 ) -> pd.Series:
-    
+
+    """
+    Stratégie simple de croisement de moyennes mobiles :
+    - long quand MA courte > MA longue
+    - cash sinon
+
+    Retourne une série de rendements de la stratégie.
+    """
     short_ma = price.rolling(short_window).mean()
     long_ma = price.rolling(long_window).mean()
 
-    # Signal : 1 = invested, 0 = cash
+    # Signal : 1 = investi, 0 = cash
     signal = (short_ma > long_ma).astype(int)
 
+    # On décale d'une période pour éviter le look-ahead bias
     signal = signal.shift(1).fillna(0)
 
+    # Rendements de l'actif
     returns = price.pct_change().fillna(0)
 
+    # Rendements de la stratégie
     strat_returns = signal * returns
 
     return strat_returns.dropna()
@@ -160,3 +170,11 @@ def run_single_asset_app():
     col3.metric("Max drawdown", f"{mdd:.2f} %")
     col4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
+    st.subheader("Indicateurs de performance")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Perf totale", f"{perf_totale:.2f} %")
+    col2.metric("Vol annualisée", f"{vol_annuelle:.2f} %")
+    col3.metric("Max drawdown", f"{mdd:.2f} %")
+    col4.metric("Sharpe ratio", f"{sharpe:.2f}")
+
+    st.caption("Données Binance + stratégie sélectionnée sur la période choisie.")

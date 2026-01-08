@@ -13,12 +13,15 @@ def max_drawdown(cum_value: pd.Series) -> float:
     return float(drawdown.min())
 
 def annualized_volatility(returns: pd.Series, freq: int = 252) -> float:
+    """Vol annualisée (freq=252 pour jours de bourse)."""
     return float(returns.std() * np.sqrt(freq))
 
 def total_return(cum_value: pd.Series) -> float:
+    """Performance totale entre début et fin, en %."""
     return float(cum_value.iloc[-1] / cum_value.iloc[0] - 1)
 
 def sharpe_ratio(returns: pd.Series, risk_free_rate: float = 0.0, freq: int = 252) -> float:
+    """Sharpe ratio annualisé (rf en taux annuel)."""
     excess_returns = returns - risk_free_rate / freq
     vol = annualized_volatility(excess_returns, freq=freq)
     if vol == 0:

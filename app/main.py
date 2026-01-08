@@ -28,6 +28,5 @@ def main():
     else:
         run_portfolio_app()
 
-
 if __name__ == "__main__":
     main()
