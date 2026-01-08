@@ -19,26 +19,15 @@ def moving_average_strategy_returns(
     long_window: int = 50,
 ) -> pd.Series:
 
-    """
-    Stratégie simple de croisement de moyennes mobiles :
-    - long quand MA courte > MA longue
-    - cash sinon
-
-    Retourne une série de rendements de la stratégie.
-    """
     short_ma = price.rolling(short_window).mean()
     long_ma = price.rolling(long_window).mean()
 
     # Signal : 1 = investi, 0 = cash
     signal = (short_ma > long_ma).astype(int)
 
-    # On décale d'une période pour éviter le look-ahead bias
     signal = signal.shift(1).fillna(0)
-
-    # Rendements de l'actif
     returns = price.pct_change().fillna(0)
 
-    # Rendements de la stratégie
     strat_returns = signal * returns
 
     return strat_returns.dropna()
@@ -58,7 +47,7 @@ def run_single_asset_app():
         "Crypto (Binance)",
         options=crypto_choices,
         index=0,
-        help="Paires spot USDT disponibles sur Binance."
+        help="USDT spot pairs available on Binance."
     )
 
     # Strategy selection
@@ -138,11 +127,9 @@ def run_single_asset_app():
 
     cum_value = compute_cumulative_value(strat_returns, initial_capital=1.0)
 
-    # ---------- GRAPHIQUE COMBINÉ ----------
-    st.subheader(f"Prix & stratégie {strat_name}")
+    # ---------- COMBINED GRAPH ----------
+    st.subheader(f"Price & strategy {strat_name}")
 
- # On met la stratégie sur la même échelle que le prix pour la lisibilité
-    # (affichage uniquement : les KPIs restent calculés sur cum_value brute)
     first_price = df.loc[cum_value.index[0], "price"]
     first_cum = cum_value.iloc[0]
     strategy_scaled = cum_value * (first_price / first_cum)
@@ -170,4 +157,4 @@ def run_single_asset_app():
     col3.metric("Max drawdown", f"{mdd:.2f} %")
     col4.metric("Sharpe ratio", f"{sharpe:.2f}")
 
-    st.caption("Données Binance + stratégie sélectionnée sur la période choisie.")
+
