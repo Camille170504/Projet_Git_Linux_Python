@@ -11,14 +11,8 @@ def fetch_single_asset_history(
     end: str,
     interval: str = "1h",
 ) -> pd.DataFrame:
-    """
-    Récupère l'historique d'une crypto depuis l'API publique de Binance.
 
-    - symbol : "BTCUSDT", "ETHUSDT", ...
-    - interval : "1m", "5m", "1h", "4h", "1d", ...
-    """
-
-    # Calcul du nombre de points (limite API Binance = 1000)
+    # Calculating the number of points (Binance API limit = 1000)
     start_dt = pd.to_datetime(start)
     end_dt = pd.to_datetime(end)
     delta_hours = max(1, int((end_dt - start_dt).total_seconds() // 3600))
@@ -45,8 +39,7 @@ def fetch_single_asset_history(
     dates = []
     closes = []
 
-    # Structure des klines Binance :
-    # [ openTime, open, high, low, close, volume, closeTime, ... ]
+    # Binance kline structure :
     for k in raw_klines:
         open_time_ms = k[0]
         close_price = float(k[4])
@@ -66,10 +59,6 @@ def fetch_multi_assets_history(
     end: str,
     interval: str = "1h",
 ) -> pd.DataFrame:
-    """
-    Récupère l'historique de plusieurs cryptos depuis Binance.
-    Retourne un DataFrame avec une colonne par symbole.
-    """
 
     all_dfs = []
 
@@ -83,6 +72,7 @@ def fetch_multi_assets_history(
     if not all_dfs:
         return pd.DataFrame()
 
-    # jointure sur les dates communes
+    # Joining common dates
     df_all = pd.concat(all_dfs, axis=1, join="inner")
     return df_all
+
