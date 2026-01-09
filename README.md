@@ -13,5 +13,5 @@ The goal of this project is to design a professional dashboard capable of:
 To design and deploy an online platform that retrieves real-time financial data, displays it in an interactive dashboard, and provides tools for backtesting and portfolio analysis.
 
 ## Division of Work
-QuantA: Univariate single-asset analysis module
-QuantB: Multivariate and multi-asset portfolio module
+Quant A: Univariate single-asset analysis module  
+Quant B: Multivariate and multi-asset portfolio module
